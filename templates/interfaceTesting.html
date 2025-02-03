@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" integrity="sha384-dpuaG1suU0eT09tx5plTaGMLBsfDLzUCCUXOY2j/LSvXYuG6Bqs43ALlhIqAJVRb" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+  <link rel="stylesheet" type="text/css" href="static/interface.css" />
+
+  <title>Strat Maker</title>
+</head>
+
+<body class="dark-mode">
+  <nav class="navbar navbar-expand-lg navbar-dark-mode">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#" style="text-shadow: 1px 1px gray; font-size:25px;">Strat Maker</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/" style="margin-top:7px;">
+                 <i class="fa fa-user-plus" style="font-size:22px; margin-left:10px; text-shadow:none; border:none;"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/login">
+                <i class="fa fa-sign-out" style="margin-left: 41.2px; font-size:24px; margin-top:7px;"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/dbshow/{{username}}">
+                <i class="fa fa-history" aria-hidden="true" style="margin-left: 45px; font-size:23px; margin-top:7px;"></i>
+              </a>
+            </li>
+          </ul>
+            <button class="btn btn-outline-secondary ms-auto" id="modeToggle" style="margin-left: 110vh; text-shadow: 0.6px 0.6px gray;">Dark Mode</button>
+      </div>
+    </div>
+  </nav>
+
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+
+            <p class="alert alert-success d-flex justify-content-between align-items-center" role="alert" style="margin:10px;">
+              <span>
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                {{ message }}
+              </span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </p>
+
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+
+  <div class="container">
+    <form action="/{{username}}" method="POST" class="box">
+      <div class="mb-3">
+        <label for="prompt_data" class="form-label" style="padding-bottom: 10px; display:flex; justify-content:center;"><h5 style="font-size:25px">User</h5></label>
+        <textarea name="prompt_data" placeholder="Enter your prompt here" id="prompt_data" required></textarea>
+        <!-- mic button -->
+        <div style="display:flex; position:relative; justify-content: flex-end; margin-top:-39vh; margin-right: -12px;">
+          <button type="button" onclick="toggleSpeechRecognition()" class="mic-button">
+            <i class="fa fa-microphone" aria-hidden="true" style="color: white;"></i>
+          </button>
+        </div>
+
+        <input type="hidden" name="history" value="{{ history }}">
+      </div>
+
+
+      <div style="display:flex; justify-content:left;">
+        <button type="reset" class="button">Clear</button>
+      </div>
+
+      <div style="display:flex; justify-content:right; margin-top:-38px;">
+        <button type="submit" class="button">Submit</button>
+      </div>
+    </form>
+
+
+{% if result %}
+      <div class="box result-box" id="resultBox">
+        <button class="close-button" onclick="closeResultBox()">X</button>
+        <label class="form-label" style="display: flex; justify-content: center;"><h5 style="font-size: 25px;">Assistant</h5></label>
+<!--        <div class="result" id="result">-->
+<!--            {{result}}-->
+<!--        {{result | replace('\n', '<br>')}}-->
+<!--            <div id="rule-builder"></div>-->
+<!--            <div id="buying-sqroff-rules"></div>-->
+<!--            <div id="selling-rules"></div>-->
+<!--            <div id="selling-sqroff-rules"></div>-->
+<!--            <button onclick="addRuleGroup()">Add Group</button>-->
+<!--            <button onclick="getRules()">Get rules</button>-->
+        <div class="result">
+        <div class="user-form">
+        <div id="rule-builder"></div><hr>
+        <div id="buying-sqroff-rules"></div> <hr>
+        <br>
+        <div id="selling-rules"></div><hr>
+        <div id="selling-sqroff-rules"></div>
+        </div>
+        </div>
+
+        <button class="uf-btn" onclick="getRules()" style="height:30px; margin-left: 61vh; margin-bottom: -20px; color: black; background-color: gray; border: 1px solid black; ">Get rules</button>
+<!--            <button class="uf-btn" onclick="addRuleGroup()" style="height:30px;">Add Group</button>-->
+        <!--            <button class="uf-btn" onclick="testwindow()">TestWindow</button>-->
+<!--            {{result | replace('\n', '<br>') | safe}}-->
+<!--            </div>-->
+
+        <hr class="hr-border">
+        <div>
+          <button id="downloadJson" class="download-button-container">
+            <i class="fa fa-download"></i>
+          </button>
+          <span class="copy-button">
+            <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/shoelace.js"></script>
+            <sl-copy-button value="{{result}}"></sl-copy-button>
+          </span>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+
+
+<!--      <button class="code-container" onclick="showZoomedContent()">-->
+<!--        <i class="fa-solid fa-code"></i>-->
+<!--        <div class="json-format-code">-->
+<!--          {{result | replace('\n', '<br>') | safe}}-->
+<!--        </div>-->
+<!--      </button>-->
+
+
+  <div class="box2 result-box2">
+    <label class="form-label" style="display:flex; justify-content:center;"><h5><a href="/dbshow/{{username}}" style="text-decoration:none; color: white; margin-top: 100px;">Chat History</a></h5></label><hr>
+    <div class="history">
+      {% for item in chat_history|reverse %}
+        <div class="chat-entry">
+          <div class="message-box">
+            <div class="user-message">
+              <strong class="username" style="color: cyan">{{username}}:</strong>
+              <span class="prompt">{{item.prompt}}</span>
+            </div>
+            <span class="timestamp" style="margin-top:-4px; color:gray;">{{item.timestamp.strftime("%d-%m-%Y %H:%M:%S")}}</span>
+            <div class="assistant-message">
+              <strong class="assistant" style="color: #39FF14">Assistant:</strong>
+              <span class="response" style="margin:-9px;"> {{item.responses}}</span>
+              <button class="btn btn-outline-primary btn-sm zoom-btn" style="margin-right:-15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" fill="currentColor" class="bi bi-zoom-in" viewBox="0 0 13 13">
+                  <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
+                  <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z"/>
+                  <path fill-rule="evenodd" d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="zoomed-container">
+            <div class="zoomed-content">
+              <button class="btn btn-outline-danger btn-sm close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="bi bi-zoom-out" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11M13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0"/>
+                  <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1 6.5 6.5 0 0 1-1.398 1.4z"/>
+                  <path fill-rule="evenodd" d="M3 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
+                </svg>
+              </button>
+              <strong class="user-heading-zoom">{{username}}: </strong> {{item.prompt}} <br> <br>
+              <strong class="assistant-heading-zoom">Assistant: </strong>
+              <pre><code id="json-response" style="font-size:15px;">{{item.responses | replace('\n', '<br>') | safe}}</code> </pre>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="static/interface.js"></script>
+  <link rel="stylesheet" type="text/css" href="static/user-form.css" />
+
+  <!--  <script src="static/interfaceTesting.js"></script>-->
+
+  <script>
+
+  const result = {{result|tojson|safe}};
+  const initialJson = JSON.parse(result);
+
+  const ruleBuilder = document.getElementById('rule-builder');
+  const SellConditionContainer = document.getElementById('selling-rules');
+  const Buy_squareoff_conditionContainer = document.getElementById('buying-sqroff-rules');
+  const Sell_squareoff_conditionContainer = document.getElementById('selling-sqroff-rules');
+
+  function createRuleGroup(json, conditions) {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'rule-group';
+
+      const conditionSelect = document.createElement('select');
+      conditionSelect.innerHTML = `
+          <option value="AND">AND</option>
+          <option value="OR">OR</option>
+      `;
+      conditionSelect.value = json.conditionOperator || 'AND';
+      groupDiv.appendChild(conditionSelect);
+
+      (Array.isArray(json.conditions) ? json.conditions : [json.conditions]).forEach(rule => {
+          if (rule.conditions) {
+              const subgroup = createRuleGroup(rule, conditions);
+              groupDiv.appendChild(subgroup);
+          } else if (rule) {
+              const ruleDiv = createRule(rule, conditions);
+              groupDiv.appendChild(ruleDiv);
+          }
+      });
+
+      const addRuleBtn = document.createElement('button');
+      addRuleBtn.innerText = 'Add rule';
+      addRuleBtn.classList.add('uf-btn');
+      addRuleBtn.onclick = () => {
+          const newRule = createRule({ condition: '', Operator: '', Value: '' }, conditions);
+          groupDiv.insertBefore(newRule, addRuleBtn);
+      };
+      groupDiv.appendChild(addRuleBtn);
+
+      const addGroupBtn = document.createElement('button');
+      addGroupBtn.innerText = 'Add group';
+      addGroupBtn.classList.add('uf-btn');
+      addGroupBtn.onclick = () => {
+          const newGroup = createRuleGroup({ conditionOperator: 'AND', conditions: [] }, conditions);
+          groupDiv.insertBefore(newGroup, addGroupBtn);
+      };
+      groupDiv.appendChild(addGroupBtn);
+
+      return groupDiv;
+  }
+
+  function createRule(rule, conditions) {
+      const ruleDiv = document.createElement('div');
+      ruleDiv.className = 'rule';
+
+      const conditionSelect = createSelect(conditions.filter(cond => cond !== 'Close Comparison' || cond !== 'Candle Close Comparison' || cond !== 'CloseComparison'));
+      conditionSelect.value = rule.condition || '';
+      ruleDiv.appendChild(conditionSelect);
+
+      if (rule.condition === 'Candle Close Comparison' || rule.condition === 'Close Comparison' || rule.condition === 'Price Comparison' || rule.condition === 'CloseComparison') {
+          const selectCondition1 = createSelect(conditions);
+          selectCondition1.value = rule.Value1 || '';
+          ruleDiv.appendChild(selectCondition1);
+
+          const operatorSelect = createSelect(['<', '=', '>', '<=', '>=', '=='], true);
+          operatorSelect.value = rule.Operator || '';
+          ruleDiv.appendChild(operatorSelect);
+
+          const selectCondition2 = createSelect(conditions);
+          selectCondition2.value = rule.Value2 || '';
+          ruleDiv.appendChild(selectCondition2);
+
+          ruleDiv.removeChild(conditionSelect);
+      } else {
+
+          const operatorSelect = createSelect(['<', '=', '>', '<=', '>=', '=='], true);
+          operatorSelect.value = rule.Operator || '';
+          ruleDiv.appendChild(operatorSelect);
+
+      if (rule.condition === 'SuperTrend' || rule.condition === 'Supertrend'|| rule.condition === 'SMA' || rule.Period) {
+              const periodInput = document.createElement('input');
+              periodInput.type = 'text';
+              periodInput.placeholder = 'Period';
+              periodInput.value = rule.Period || rule.Period1 || rule.Period2 || '';
+              ruleDiv.appendChild(periodInput);
+
+              ruleDiv.removeChild(operatorSelect);
+
+              const operatorSelectPeriod = createSelect(['<', '=', '>', '<=', '>=', '=='], true);
+              operatorSelectPeriod.value = rule.Operator || '';
+              ruleDiv.appendChild(operatorSelectPeriod);
+      }
+
+      if(rule.condition === 'Candle' || rule.condition.toLowerCase() === 'candlecolor') {
+              const valueInput = document.createElement('text');
+              valueInput.type = 'text';
+              valueInput.placeholder = 'Color';
+              valueInput.value = rule.Value || '';
+              ruleDiv.appendChild(valueInput);
+
+              if(operatorSelect){
+                ruleDiv.removeChild(operatorSelect);
+              }
+      }
+
+
+<!--      if(rule.condition === 'Gann Fan Angle'){-->
+<!--            ruleDiv.removeChild(operatorSelect);-->
+
+<!--            const operatorSelectBtn = document.createElement('text');-->
+<!--            operatorSelectBtn.type = 'text';-->
+<!--            operatorSelectBtn.placeholder = 'Between';-->
+<!--            operatorSelectBtn.value = rule.Operator || '';-->
+<!--            ruleDiv.appendChild(operatorSelect);-->
+
+<!--            const valueSelect = document.createElement('text');-->
+<!--            valueSelect.type = 'text';-->
+<!--            valueSelect.placeholder = 'value1'-->
+<!--            valueSelect.value = rule.Value1 || '';-->
+<!--            ruleDiv.appendChild(valueSelect);-->
+
+<!--            const valuenewSelect = document.createElement('text');-->
+<!--            valuenewSelect.type = 'text';-->
+<!--            valuenewSelect.placeholder = 'value2';-->
+<!--            valuenewSelect.value = rule.Value2 || '';-->
+<!--            ruleDiv.appendChild(valuenewSelect);-->
+
+<!--      }-->
+
+        if(rule.condition.toLowerCase() === 'candlepattern') {
+              const patternSelect = document.createElement('input');
+              patternSelect.type = 'text';
+              patternSelect.placeholder = 'Pattern';
+              patternSelect.value = rule.Pattern || '' ;
+              ruleDiv.appendChild(patternSelect);
+
+              if (operatorSelect) {
+                  ruleDiv.removeChild(operatorSelect);
+              }
+        }
+
+<!--      if(rule.SubCondition){-->
+<!--              const subconditionSelect = document.createElement('input');-->
+<!--              subconditionSelect.type = 'input';-->
+<!--              subconditionSelect.placeholder = 'subcondition';-->
+<!--              subconditionSelect.value = rule.SubCondition || '';-->
+<!--              ruleDiv.appendChild(subconditionSelect);-->
+
+<!--              ruleDiv.removeChild(operatorSelect);-->
+<!--      }-->
+
+      if (rule.LongPeriod || rule.ShortPeriod) {
+              const longPeriodInput = document.createElement('input');
+              longPeriodInput.type = 'text';
+              longPeriodInput.placeholder = 'Long Period';
+              longPeriodInput.value = rule.LongPeriod || '';
+              ruleDiv.appendChild(longPeriodInput);
+
+              const shortPeriodInput = document.createElement('input');
+              shortPeriodInput.type = 'text';
+              shortPeriodInput.placeholder = 'Short Period';
+              shortPeriodInput.value = rule.ShortPeriod || '';
+              ruleDiv.appendChild(shortPeriodInput);
+
+      } else {
+              let valueInput;
+              if (rule.condition === 'TimeBased' || rule.condition === 'Time Based' || rule.condition === 'Time') {
+                  valueInput = document.createElement('input');
+                  valueInput.type = 'text';
+                  valueInput.value = rule.Value || rule.TimeFrame || '';
+                  operatorSelect.style.display = 'none';
+              } else if (isNaN(rule.Value)) {
+                  valueInput = createSelect(conditions);
+                  valueInput.value = rule.Value || '';
+              } else {
+                  valueInput = document.createElement('input');
+                  valueInput.type = 'text';
+                  valueInput.value = rule.Value || '';
+              }
+              ruleDiv.appendChild(valueInput);
+          }
+      }
+
+      conditionSelect.onchange = () => {
+          const newRule = { condition: conditionSelect.value, Operator: '', Value: '' };
+          const newRuleDiv = createRule(newRule, conditions);
+          ruleDiv.replaceWith(newRuleDiv);
+      };
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.innerText = 'Delete';
+      deleteBtn.classList.add('uf-btn');
+      deleteBtn.onclick = () => {
+          ruleDiv.remove();
+      };
+      ruleDiv.appendChild(deleteBtn);
+
+      return ruleDiv;
+  }
+
+
+  function createSelect(options, isOperator) {
+      const select = document.createElement('select');
+      select.classList.add('dynamic-select');
+      options.forEach(option => {
+          const opt = document.createElement('option');
+          opt.value = option;
+          opt.innerText = isOperator ? convertOperator(option) : option;
+          select.appendChild(opt);
+      });
+      resizeSelect(select);
+      select.addEventListener('change', () => resizeSelect(select));
+      return select;
+  }
+
+  function resizeSelect(select) {
+      const optionTexts = Array.from(select.options).map(option => option.text);
+      const longestText = optionTexts.reduce((a, b) => a.length > b.length ? a : b);
+      const tempSpan = document.createElement('span');
+      tempSpan.style.visibility = 'hidden';
+      tempSpan.style.whiteSpace = 'nowrap';
+      tempSpan.innerText = longestText;
+      document.body.appendChild(tempSpan);
+      select.style.width = `${tempSpan.clientWidth + 10}px`;
+      document.body.removeChild(tempSpan);
+  }
+
+  function convertOperator(operator) {
+      switch (operator) {
+          case '<': return 'less';
+          case '=': return 'equal';
+          case '>': return 'greater';
+          case '<=': return 'less than equal';
+          case '>=': return 'greater than equal';
+          case '==': return 'starts';
+          default: return operator;
+      }
+  }
+
+  function addRuleGroup() {
+      const newGroup = createRuleGroup({ conditionOperator: 'AND', conditions: [] }, conditionFields);
+      ruleBuilder.appendChild(newGroup);
+  }
+
+
+  function parseGroup(groupDiv) {
+      const conditionOperator = groupDiv.querySelector('select').value;
+      const conditions = [];
+      const children = groupDiv.children;
+
+      for (let i = 1; i < children.length - 2; i++) {
+          const child = children[i];
+          if (child.className === 'rule') {
+              const condition = child.children[0].value;
+              const subCondition = child.children[1] && child.children[1].tagName === 'SELECT' ? child.children[1].value : null;
+              const Operator = child.children[subCondition ? 2 : 1].value;
+              const longPeriod = child.children[subCondition ? 3 : 2] && child.children[subCondition ? 3 : 2].placeholder === 'Long Period' ? child.children[subCondition ? 3 : 2].value : null;
+              const shortPeriod = child.children[subCondition ? 4 : 3] && child.children[subCondition ? 4 : 3].placeholder === 'Short Period' ? child.children[subCondition ? 4 : 3].value : null;
+              const value = longPeriod === null && shortPeriod === null ? child.children[subCondition ? 3 : 2].value : null;
+
+              const conditionObj = { condition, Operator };
+              if (subCondition) conditionObj.SubCondition = subCondition;
+              if (longPeriod) conditionObj.LongPeriod = longPeriod;
+              if (shortPeriod) conditionObj.ShortPeriod = shortPeriod;
+              if (value) conditionObj.Value = value;
+
+              conditions.push(conditionObj);
+          } else if (child.className === 'rule-group') {
+              conditions.push(parseGroup(child));
+          }
+      }
+
+      return { conditionOperator, conditions };
+  }
+  function extractConditions(config) {
+      const conditions = new Set();
+
+      const extractFromConditions = (conditionList) => {
+          (Array.isArray(conditionList) ? conditionList : [conditionList]).forEach(condition => {
+              if (condition.condition) {
+                  conditions.add(condition.condition);
+              }
+              if (condition.conditions) {
+                  extractFromConditions(condition.conditions);
+              }
+              if (condition.Value) {
+                  conditions.add(condition.Value);
+              }
+              if (condition.Value1) {
+                  conditions.add(condition.Value1);
+              }
+              if (condition.Value2) {
+                  conditions.add(condition.Value2);
+              }
+          });
+      };
+
+      extractFromConditions(config.BuyCondition?.conditions || config.BuyCondition || []);
+      extractFromConditions(config.Buy_squareoff_condition?.conditions || config.Buy_squareoff_condition || []);
+      extractFromConditions(config.SellCondition?.conditions || config.SellCondition || []);
+      extractFromConditions(config.Sell_squareoff_condition?.conditions || config.Sell_squareoff_condition || []);
+
+      return Array.from(conditions);
+  }
+
+  const conditionFields = extractConditions(initialJson.Config);
+
+  function getRules() {
+      const buyingRules = parseGroup(ruleBuilder.querySelector('.rule-group'));
+      const SellCondition = parseGroup(SellConditionContainer.querySelector('.rule-group'));
+      const Buy_squareoff_condition = parseGroup(Buy_squareoff_conditionContainer.querySelector('.rule-group'));
+      const Sell_squareoff_condition = parseGroup(Sell_squareoff_conditionContainer.querySelector('.rule-group'));
+
+      const fullJson = {
+          BuyCondition: buyingRules.conditions,
+          SellCondition: SellCondition.conditions,
+          Buy_squareoff_condition: Buy_squareoff_condition.conditions,
+          Sell_squareoff_condition: Sell_squareoff_condition.conditions
+      };
+
+      window.alert(JSON.stringify(fullJson));
+  }
+
+
+  const buyingHeader = document.createElement('h3');
+  buyingHeader.innerText = 'Buying Condition';
+  buyingHeader.classList.add('uf-header');
+  ruleBuilder.appendChild(buyingHeader);
+  ruleBuilder.appendChild(createRuleGroup(initialJson.Config.BuyCondition?.conditions ? initialJson.Config.BuyCondition : { conditionOperator: 'AND', conditions: [initialJson.Config.BuyCondition] }, conditionFields));
+
+  const sellHeader = document.createElement('h3');
+  sellHeader.innerText = 'Selling Condition';
+  sellHeader.classList.add('uf-header');
+  SellConditionContainer.appendChild(sellHeader);
+  SellConditionContainer.appendChild(createRuleGroup(initialJson.Config.SellCondition?.conditions ? initialJson.Config.SellCondition : { conditionOperator: 'AND', conditions: [initialJson.Config.SellCondition] }, conditionFields));
+
+  const Buy_squareoff_conditionHeader = document.createElement('h3');
+  Buy_squareoff_conditionHeader.innerText = 'Buying Square Off Condition';
+  Buy_squareoff_conditionHeader.classList.add('uf-header');
+  Buy_squareoff_conditionContainer.appendChild(Buy_squareoff_conditionHeader);
+  Buy_squareoff_conditionContainer.appendChild(createRuleGroup(initialJson.Config.Buy_squareoff_condition?.conditions ? initialJson.Config.Buy_squareoff_condition : { conditionOperator: 'AND', conditions: [initialJson.Config.Buy_squareoff_condition] }, conditionFields));
+
+  const Sell_squareoff_conditionHeader = document.createElement('h3');
+  Sell_squareoff_conditionHeader.innerText = 'Selling Square Off Condition';
+  Sell_squareoff_conditionHeader.classList.add('uf-header');
+  Sell_squareoff_conditionContainer.appendChild(Sell_squareoff_conditionHeader);
+  Sell_squareoff_conditionContainer.appendChild(createRuleGroup(initialJson.Config.Sell_squareoff_condition?.conditions ? initialJson.Config.Sell_squareoff_condition : { conditionOperator: 'AND', conditions: [initialJson.Config.Sell_squareoff_condition] }, conditionFields));
+
+</script>
+  <script>
+    function closeResultBox() {
+    document.getElementById("resultBox").style.display = "none";
+  }
+
+  </script>
+
+</body>
+</html>
+

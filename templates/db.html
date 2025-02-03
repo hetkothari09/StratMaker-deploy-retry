@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strat Maker</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" integrity="sha384-dpuaG1suU0eT09tx5plTaGMLBsfDLzUCCUXOY2j/LSvXYuG6Bqs43ALlhIqAJVRb" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+
+  <style>
+    body.dark-mode {
+      background-color: #5f5f5f;
+      color: #c0c0c0;
+      font-family: monospace;
+    }
+
+    body.light-mode {
+      background-color: black;
+      color: #000000;
+      font-family: monospace;
+    }
+
+    .container {
+      justify-content: center;
+      align-items: center;
+      height: auto;
+      margin-bottom: 20px;
+      border: 3px solid #ccc;
+      background-color: black;
+      font-size: 17px;
+      animation: myhistory2 2s infinite;
+    }
+
+    @keyframes myhistory2{
+      50% {box-shadow: 5px 5px 5px #ccc;}
+    }
+
+    .light-mode .container {
+      background-color: black;
+      color: white;
+      border-color: #1F51FF;
+      animation: myhistory 2s infinite;
+    }
+
+    @keyframes myhistory{
+      50% {box-shadow: 5px 5px 5px blue;}
+    }
+
+    .box, .box2 {
+      border: 3px solid #ccc;
+      border-radius: 5px;
+      margin: 10px;
+      padding: 20px;
+      color: white;
+    }
+
+    .box2 {
+      background-color: black;
+    }
+
+    .result-box, .result-box2 {
+      height: 50vh;
+      overflow-y: auto;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 5px solid #ddd;
+      border-radius: 25px;
+      resize: vertical;
+      min-height: 150px;
+      background-color: #a9a9a9;
+      color: black;
+      height: 80%;
+    }
+
+    .navbar-dark-mode, .navbar-light-mode {
+      background-color: black;
+      border-bottom: 3px solid gray;
+    }
+
+    .navbar-light-mode .nav-link,
+    .navbar-light-mode .navbar-brand {
+      color: white !important;
+    }
+
+    .navbar-dark-mode .nav-link,
+    .navbar-dark-mode .navbar-brand {
+      color: white !important;
+    }
+
+    .btn {
+      background-color: #a9a9a9;
+      border-color: black;
+      color: black;
+      margin-left: 10px;
+    }
+
+    .conv {
+      margin-left: 20px;
+      color: white;
+      text-shadow: 0.5px 0.5px black;
+    }
+
+    .dark-mode .user-message .assistant-message {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+    }
+
+    .light-mode .message-box {
+      border: 1.5px solid black;
+    }
+
+    .light-mode .header {
+      color: white;
+      text-shadow: 1.5px 1.5px gray;
+    }
+
+    .header {
+      color: white;
+      text-shadow: 1.5px 1.5px black;
+    }
+
+    .assistant-message {
+      border-bottom: none;
+      margin-bottom: -15px;
+      padding-top: 20px;
+    }
+
+    .user-message {
+      padding-top: 10px;
+    }
+
+    .user-header {
+      color: cyan;
+      text-shadow: 0.7px 0.7px cyan;
+    }
+
+    .assistant-header {
+      color: #14b900;
+      text-shadow: 0.7px 0.7px #39FF14;
+    }
+
+    .light-mode .user-header {
+      color: cyan;
+      text-shadow: 0.7px 0.7px gray;
+    }
+
+    .message-box {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .timestamp {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 0.9em;
+      color: #888;
+    }
+
+    .navbar-nav {
+      display: flex;
+      justify-content: space-between;
+      width: 25%;
+    }
+
+    .nav-item {
+      margin: 0 10px;
+    }
+
+    .btn {
+      background-color: #a9a9a9;
+      border-color: black;
+      color: black;
+    }
+  </style>
+
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid" style="margin-top:2px;">
+      <a class="navbar-brand" href="#" style="text-shadow: 1px 1px gray; font-size:25px;">Strat Maker</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">
+              <i class="fa fa-user-plus" style="text-shadow: 1px 1px white; font-size: 22px; margin-top:4px;"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">
+              <i class="fa fa-sign-out" style="font-size:24px; margin-top:4px; margin-left:-10px;"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/{{username}}">
+              <i class="fa-regular fa-message" style="color: #ffffff; text-shadow: 1px 1px white; font-size: 23px; margin-top:5px;"></i>
+            </a>
+          </li>
+        </ul>
+        <button class="btn btn-outline-secondary ms-auto" id="modeToggle" style="position: absolute; right: 20px;">Light Mode</button>
+      </div>
+    </div>
+  </nav>
+
+  <br>
+  <div class="header">
+    <h3 style="display: flex; justify-content: center;">History of {{username}}</h3>
+  </div>
+  <div class="conv">
+    <div class="container">
+      <br>
+      {% for x in output %}
+      <div class="message-box">
+        <div class="user-message">
+          <strong class="user-header">{{username}}: </strong> {{x.prompt}} <br>
+        </div>
+        <div class="assistant-message">
+          <strong class="assistant-header">Assistant: </strong> {{x.responses}} <br><br>
+        </div>
+        <span class="timestamp" style="margin-top: -4px">{{x.timestamp.strftime("%d-%m-%Y %H:%M:%S")}}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js" integrity="sha512-..." crossorigin="anonymous"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const mode = localStorage.getItem('mode') || 'dark';
+      setMode(mode);
+    });
+
+    document.getElementById('modeToggle').addEventListener('click', function() {
+      const body = document.body;
+      const currentMode = body.classList.contains('dark-mode') ? 'dark' : 'light';
+      const newMode = currentMode === 'dark' ? 'light' : 'dark';
+      setMode(newMode);
+    });
+
+    function setMode(mode) {
+      const body = document.body;
+      const navbar = document.querySelector('.navbar');
+      body.classList.toggle('dark-mode', mode === 'dark');
+      body.classList.toggle('light-mode', mode === 'light');
+      navbar.classList.toggle('navbar-dark-mode', mode === 'dark');
+      navbar.classList.toggle('navbar-light-mode', mode === 'light');
+      document.getElementById('modeToggle').textContent = mode === 'dark' ? 'Light Mode' : 'Dark Mode';
+      localStorage.setItem('mode', mode);
+    }
+  </script>
+</body>
+</html>
