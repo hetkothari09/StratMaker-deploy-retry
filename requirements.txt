@@ -3,9 +3,6 @@ Flask-SQLAlchemy==3.0.5
 Flask-Bcrypt==1.0.1
 python-dotenv==1.0.0
 psycopg2==2.9.9
-<<<<<<< HEAD
 openai==0.27.2
-=======
 openai==1.60.0
->>>>>>> 9b6e3ca (updated requirements.txt)
 gunicorn==22.0.0
