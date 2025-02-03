@@ -177,12 +177,7 @@ def user_endpoint(username):
 
         response = client.chat.completions.create(
             model=model,
-            messages=[
-                {'role': 'system', 'content': 'You are an assistant designed to extract key indicators and trading '
-                                              'conditions from a given paragraph of information and generate a JSON'
-                                              ' file in a specific format structure.'},
-                *history
-            ],
+            messages=[{'role': 'system', 'content': 'You are an assistant designed to extract key indicators and trading conditions from a given paragraph of information and generate a JSON file in a specific format structure.'}, *history],
             max_tokens=600,
             temperature=0.4
         )
