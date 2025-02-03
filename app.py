@@ -16,7 +16,7 @@ client = OpenAI(api_key=api_key)
 google_client_id = os.getenv("GOOGLE_CLIENT_ID")
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://gpt_prompt_responses_user:uXUAKPiDoi9sWPSF7Zpxqc6ZqeIleply@dpg-cugbbrdumphs73cpjs60-a/gpt_prompt_responses'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -82,8 +82,8 @@ def signup_page():
             google_id = data.get("sub")
 
             # Check for existing email
-            cursor.execute('SELECT email FROM public.new_user_creds WHERE email = %s', (email,))
-            existing_email = cursor.fetchone()
+            existing_email = UserCreds.query.filter_by(email=email).first()
+
 
             if existing_email is not None and email == existing_email[0]:
                 flash('USER ALREADY EXISTS!', 'error')
@@ -244,4 +244,6 @@ if __name__ == "__main__":
         existing_users = UserCreds.query.all()
         for user in existing_users:
             create_user_table(user.email)
-    app.run(debug=True)
+    app.config['ENV'] = 'production'
+    app.config['DEBUG'] = False
+
